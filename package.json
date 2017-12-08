@@ -1,0 +1,10 @@
+{
+  "name": "node-sdk-line",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@line/bot-sdk": "^5.1.0",
+    "express": "^4.16.2"
+  }
+}
