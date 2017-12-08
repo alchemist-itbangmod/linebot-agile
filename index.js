@@ -1,41 +1,42 @@
-const line = require('@line/bot-sdk')
 const express = require('express')
+const bodyParser = require('body-parser')
+const line = require('@line/bot-sdk')
 
-// create LINE SDK config from env variables
 const config = {
   channelAccessToken: '3Rs1Noy94KmJ0dM9zs+3mksgZjDl6jCIjpwRlQ2WtwL9I3snNzNy0l2mq+EIJ8TtMczoocQNlmIA55ZgaRwkJX5AuctxrsnbDcbUenivetzgOr5frzACT7y9bIZXzcZdm60cdjfyjN4sKhvx6WeS5wdB04t89/1O/w1cDnyilFU=',
   channelSecret: 'd60e4299ad4f5d253babc9d91e649300'
 }
 
-// create LINE SDK client
-const client = new line.Client(config)
-
-// create Express app
-// about Express itself: https://expressjs.com/
 const app = express()
+app.use(bodyParser.json())
 
-// register a webhook handler with middleware
-// about the middleware, please refer to doc
-app.post('/callback', line.middleware(config), (req, res) => {
-  Promise.all(req.body.events.map(handleEvent)).then(result => res.json(result))
+app.get('/', (req, res) => {
+  res.json('hello')
 })
 
-// event handler
-function handleEvent (event) {
-  if (event.type !== 'message' || event.message.type !== 'text') {
-    // ignore non-text-message event
-    return Promise.resolve(null)
-  }
+app.post('/', (req, res) => {
+  res.json('post')
+})
 
-  // create a echoing text message
-  const echo = { type: 'text', text: event.message.text }
+// app.post('/webhook', line.middleware(config), (req, res) => {
+//   console.log(req)
+//   Promise.all(req.body.events.map(handleEvent)).then(result => res.json(result))
+// })
+app.post('/webhook', (req, res) => {
+  console.log(req.body)
+})
 
-  // use reply API
-  return client.replyMessage(event.replyToken, echo)
+const client = new line.Client(config)
+
+const handleEvent = event => {
+  if (event.type !== 'message' || event.message.type !== 'text') { return Promise.resolve(null) }
+
+  return client.replyMessage(event.replyToken, {
+    type: 'text',
+    text: event.message.text
+  })
 }
 
-// listen on port
-const port = process.env.PORT || 3000
-app.listen(port, () => {
-  console.log(`listening on ${port}`)
+app.listen(3000, () => {
+  console.log('server is running port 3000')
 })
