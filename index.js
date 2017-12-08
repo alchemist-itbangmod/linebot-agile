@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const line = require('@line/bot-sdk');
 
 const config = {
@@ -7,6 +8,12 @@ const config = {
 }
 
 const app = express()
+app.use(bodyParser.json())
+
+app.get('/', (req, res) => {
+  res.json('hello')
+})
+
 app.post('/webhook', line.middleware(config), (req, res) => {
   console.log(req)
   Promise
